@@ -12,6 +12,7 @@ input_ids = tokenizer.encode(inputs, return_tensors="pt").to(torch.device("cuda"
 
 outputs = model.generate(
         input_ids,
+        max_length=500
         )
 
 output = tokenizer.decode(outputs[0], skip_special_tokens=True)
