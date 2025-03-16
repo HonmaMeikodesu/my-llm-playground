@@ -3,6 +3,8 @@ from PIL import Image
 import io
 import base64
 
+import torch
+
 def image_to_data_url(img, format='png'):
     # 创建一个内存中的字节流
     buffered = io.BytesIO()
@@ -21,30 +23,30 @@ def image_to_data_url(img, format='png'):
     
     return data_url
 
-from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor, TextIteratorStreamer
+from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor, TextIteratorStreamer
 from threading import Thread
 from qwen_vl_utils import process_vision_info
 
 # default: Load the model on the available device(s)
-model = Qwen2VLForConditionalGeneration.from_pretrained(
-    "prithivMLmods/Qwen2-VL-OCR-2B-Instruct", torch_dtype="auto", device_map="auto"
+model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+    "Qwen/Qwen2.5-VL-3B-Instruct", torch_dtype="auto", device_map="auto"
 )
 
 # We recommend enabling flash_attention_2 for better acceleration and memory saving, especially in multi-image and video scenarios.
 # model = Qwen2VLForConditionalGeneration.from_pretrained(
-#     "prithivMLmods/Qwen2-VL-OCR-2B-Instruct",
+#     "Qwen/Qwen2.5-VL-3B-Instruct",
 #     torch_dtype=torch.bfloat16,
 #     attn_implementation="flash_attention_2",
 #     device_map="auto",
 # )
 
 # default processer
-# processor = AutoProcessor.from_pretrained("prithivMLmods/Qwen2-VL-OCR-2B-Instruct")
+processor = AutoProcessor.from_pretrained("prithivMLmods/Qwen2-VL-OCR-2B-Instruct")
 
 # The default range for the number of visual tokens per image in the model is 4-16384. You can set min_pixels and max_pixels according to your needs, such as a token count range of 256-1280, to balance speed and memory usage.
-min_pixels = 256*400
-max_pixels = 800*1280
-processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
+# min_pixels = 256*400
+# max_pixels = 800*1280
+# processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
 
 messages = [
     {
@@ -52,7 +54,7 @@ messages = [
         "content": [
             {
                 "type": "image",
-                "image": image_to_data_url(Image.open("image.jpg"))
+                "image": image_to_data_url(Image.open("demo5.png"))
                 },
             {
                 "type": "text",
